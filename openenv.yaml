@@ -1,0 +1,28 @@
+id: firewallx-env
+name: Adaptive Firewall Environment
+
+description: >
+  A real-world simulation of an AI-powered firewall system.
+  The agent must analyze incoming traffic and decide whether to allow, block,
+  or sandbox based on anomaly detection.
+
+entry_point: env.main:FirewallEnv
+
+observation_space:
+  traffic_type: string
+  anomaly_score: float
+  step_count: int
+  task_type: string
+
+action_space:
+  decision: string  # allow | block | sandbox
+
+reward_range: [-1.0, 1.0]
+
+tasks:
+  - id: easy
+    description: Detect obvious attacks (high anomaly)
+  - id: medium
+    description: Detect mixed traffic with moderate anomaly
+  - id: hard
+    description: Detect subtle attacks and avoid false positives
