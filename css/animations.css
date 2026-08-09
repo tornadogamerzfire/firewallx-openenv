@@ -1,0 +1,99 @@
+/* =========================================================================
+   Motion — used deliberately, not decoratively:
+   - live status pulse (system is alive)
+   - log rows entering (a new signal arrived)
+   - decision badge 3D flip (the engine committed to a decision)
+   - card tilt-on-hover (tactile depth on the readout console)
+   All of it is disabled under prefers-reduced-motion below.
+   ========================================================================= */
+
+@keyframes livePulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--allow-dim); }
+  50% { box-shadow: 0 0 0 5px transparent; }
+}
+
+.status-dot.is-live {
+  animation: livePulse 2.2s ease-in-out infinite;
+}
+
+@keyframes rowEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+    background: var(--signal-dim);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    background: transparent;
+  }
+}
+
+/* -- Decision badge: a 3D flap that drops into place when the decision
+   changes. Triggered by re-adding the .is-flipping class in JS. -- */
+@keyframes badgeFlip {
+  0%   { transform: rotateX(-90deg); opacity: 0; }
+  60%  { transform: rotateX(12deg);  opacity: 1; }
+  100% { transform: rotateX(0deg);   opacity: 1; }
+}
+
+.decision-badge-inner {
+  transform-style: preserve-3d;
+  transform-origin: 50% 0%;
+}
+
+.decision-badge-inner.is-flipping {
+  animation: badgeFlip 0.5s var(--ease-out);
+}
+
+/* -- Tilt card: JS sets --rx / --ry (degrees) on pointer move over
+   [data-tilt]; resets to 0 on pointer leave. -- */
+[data-tilt] {
+  --rx: 0deg;
+  --ry: 0deg;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.5s var(--ease-out);
+  will-change: transform;
+}
+
+[data-tilt].is-tilting {
+  transition: transform 0.08s linear;
+}
+
+/* -- Meter fill shimmer on update -- */
+@keyframes meterFlash {
+  0% { filter: brightness(1.6); }
+  100% { filter: brightness(1); }
+}
+
+.meter > span.is-updating {
+  animation: meterFlash 0.4s var(--ease-out);
+}
+
+/* -- Step dots popping in as an episode advances -- */
+@keyframes dotPop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.3); }
+  100% { transform: scale(1.15); }
+}
+
+.step-dot.is-filled { animation: dotPop 0.3s var(--ease-out); }
+
+/* -- Button press depth -- */
+.btn { transform-style: preserve-3d; }
+
+/* =========================================================================
+   Reduced motion: keep state changes legible, drop the motion itself.
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-tilt] {
+    transform: none !important;
+  }
+}

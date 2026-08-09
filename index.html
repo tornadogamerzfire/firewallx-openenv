@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FirewallX — Interception Scope</title>
+  <meta name="description" content="Live console for the FirewallX adaptive firewall environment: watch traffic, decisions, and rewards resolve in real time." />
+
+  <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- ============================= TOPBAR ============================= -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">Firewall<span>X</span></span>
+        <span class="brand-tag">// interception scope</span>
+      </div>
+
+      <div class="topbar-right">
+        <div class="segmented" id="difficulty-select" role="group" aria-label="Difficulty">
+          <button type="button" data-task="easy" class="is-active">EASY</button>
+          <button type="button" data-task="medium">MEDIUM</button>
+          <button type="button" data-task="hard">HARD</button>
+        </div>
+
+        <div class="status-pill">
+          <span id="status-dot" class="status-dot"></span>
+          <span id="status-text">connecting…</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============================= MAIN GRID ============================= -->
+    <div class="main-grid">
+
+      <!-- 3D scope (hero) -->
+      <section class="panel scope-panel">
+        <div class="panel-header">
+          <h2 class="eyebrow">Interception Scope</h2>
+          <span class="eyebrow" id="hud-step">STEP 0/5</span>
+        </div>
+
+        <div class="scope-canvas-wrap">
+          <canvas id="scope-canvas" aria-hidden="true"></canvas>
+          <div class="scope-hud">
+            <div class="hud-row">
+              <span class="hud-tag">drag to orbit · scroll to zoom</span>
+              <span id="hud-traffic" class="hud-traffic-tag">—</span>
+            </div>
+            <div class="hud-row"></div>
+          </div>
+        </div>
+
+        <p class="scope-caption">
+          Each packet launched toward the shield is a real prediction from the FirewallX API.
+          <strong>Allow</strong> passes clean through, <strong>block</strong> shatters on impact,
+          <strong>sandbox</strong> is caught and contained before fading.
+        </p>
+      </section>
+
+      <!-- Readout / controls -->
+      <section class="panel readout-panel" data-tilt>
+        <div class="panel-header">
+          <h2 class="eyebrow">Decision Readout</h2>
+        </div>
+        <div class="panel-body" style="display:flex; flex-direction:column; flex:1;">
+
+          <div class="decision-badge">
+            <div id="decision-badge-inner" class="decision-badge-inner">awaiting signal</div>
+          </div>
+
+          <div class="readout-grid">
+            <div class="readout-item">
+              <span class="label">Traffic</span>
+              <span id="readout-traffic" class="value small mono">—</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Reward (step)</span>
+              <span id="readout-reward" class="value small mono">—</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Anomaly score</span>
+              <span id="readout-anomaly" class="value mono">—</span>
+              <div class="meter"><span id="anomaly-meter"></span></div>
+            </div>
+            <div class="readout-item">
+              <span class="label">Confidence</span>
+              <span id="readout-confidence" class="value mono">—</span>
+              <div class="meter"><span id="confidence-meter"></span></div>
+            </div>
+            <div class="readout-item">
+              <span class="label">Episode reward</span>
+              <span id="readout-total-reward" class="value mono">0.00</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Normalized score</span>
+              <span id="readout-score" class="value mono">—</span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="btn-reset" class="btn">Reset</button>
+            <button id="btn-step" class="btn btn-primary">Step</button>
+            <button id="btn-run-episode" class="btn">Run episode</button>
+            <div id="step-dots" class="step-indicator" aria-label="Steps in episode"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============================= LOWER GRID ============================= -->
+    <div class="lower-grid">
+
+      <!-- Signal log -->
+      <section class="panel">
+        <div class="panel-header">
+          <h2 class="eyebrow">Signal Log</h2>
+        </div>
+        <div class="log-table-wrap">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th>Traffic</th>
+                <th>Anomaly</th>
+                <th>Confidence</th>
+                <th>Decision</th>
+                <th>Reward</th>
+              </tr>
+            </thead>
+            <tbody id="log-table-body">
+              <tr id="log-empty-state">
+                <td colspan="6" class="empty-state">No predictions yet — press Step or Run Episode.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Anomaly trace -->
+      <section class="panel">
+        <div class="panel-header">
+          <h2 class="eyebrow">Anomaly Trace</h2>
+        </div>
+        <div class="trace-canvas-wrap">
+          <canvas id="trace-canvas"></canvas>
+        </div>
+        <div class="trace-legend">
+          <span><span class="dot" style="background:var(--allow)"></span>allow</span>
+          <span><span class="dot" style="background:var(--sandbox)"></span>sandbox</span>
+          <span><span class="dot" style="background:var(--block)"></span>block</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============================= BENCHMARK ============================= -->
+    <section class="panel benchmark-panel">
+      <div class="panel-header">
+        <h2 class="eyebrow">Batch Analysis</h2>
+      </div>
+      <div class="panel-body">
+        <div class="benchmark-form">
+          <div class="field">
+            <label for="benchmark-task">Difficulty</label>
+            <select id="benchmark-task">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="benchmark-episodes">Episodes</label>
+            <input type="number" id="benchmark-episodes" min="1" max="500" value="50" />
+          </div>
+          <button id="btn-run-benchmark" class="btn btn-primary">Run batch</button>
+          <span class="settings-hint">Runs entirely server-side — doesn't touch the live episode above.</span>
+        </div>
+
+        <p id="benchmark-placeholder" class="benchmark-placeholder">
+          Run a batch to see average score, attack-block rate, and normal-allow rate across many independent episodes.
+        </p>
+
+        <div id="benchmark-results-wrap" hidden>
+          <div class="benchmark-results">
+            <div class="readout-item">
+              <span class="label">Avg. score</span>
+              <span id="bench-score" class="value mono">—</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Attack block rate</span>
+              <span id="bench-attack-rate" class="value mono">—</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Normal allow rate</span>
+              <span id="bench-normal-rate" class="value mono">—</span>
+            </div>
+            <div class="readout-item">
+              <span class="label">Avg. confidence</span>
+              <span id="bench-confidence" class="value mono">—</span>
+            </div>
+          </div>
+          <div class="benchmark-chart-wrap">
+            <canvas id="benchmark-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================= SETTINGS ============================= -->
+    <details class="settings">
+      <summary>
+        <span>⚙ API connection settings</span>
+        <span class="chev">›</span>
+      </summary>
+      <div class="settings-body">
+        <div class="field">
+          <label for="api-base-input">Backend base URL</label>
+          <input type="text" id="api-base-input" placeholder="http://127.0.0.1:8000" />
+          <span class="settings-hint">Point this at your running FirewallX backend. CORS must be enabled there.</span>
+        </div>
+        <button id="btn-save-api" class="btn">Save &amp; reconnect</button>
+        <span id="settings-status" class="settings-hint"></span>
+      </div>
+    </details>
+
+    <!-- ============================= FOOTER ============================= -->
+    <footer class="app-footer">
+      <span>FirewallX frontend — static HTML/CSS/JS, no build step, no external runtime dependencies.</span>
+      <span><a href="backend/README.md">backend docs</a></span>
+    </footer>
+
+  </div>
+
+  <!-- Error banner -->
+  <div id="error-banner" class="error-banner" hidden role="alert">
+    <span class="dot"></span>
+    <span id="error-message"></span>
+    <button id="error-dismiss" aria-label="Dismiss">×</button>
+  </div>
+
+  <script src="js/vendor/three.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/three-scene.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
