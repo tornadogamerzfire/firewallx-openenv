@@ -1,0 +1,18 @@
+[project]
+name = "firewallx-env"
+version = "0.1.0"
+description = "Adaptive Firewall OpenEnv"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "requests",
+    "openai>=1.0.0",
+    "openenv>=0.1.13"
+]
+
+[project.scripts]
+server = "server.app:main"
+
+[tool.openenv]
+entrypoint = "server.app:main"
