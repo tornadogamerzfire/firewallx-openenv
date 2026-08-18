@@ -15,6 +15,28 @@ class FirewallXApiError extends Error {
 }
 
 const FirewallXApi = (() => {
+  /**
+   * Fire-and-forget wake-up request for Render's free service. The request is
+   * intentionally not awaited by the page bootstrap because its only job is
+   * to cause an idle backend to start waking before the user presses a
+   * backend-dependent control. `keepalive` lets the browser keep the request
+   * alive across short navigation events where supported.
+   */
+  function wakeup() {
+    const base = FirewallXConfig.getBaseUrl();
+    const url = `${base}/healthz`;
+
+    try {
+      return fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        keepalive: true,
+      }).catch(() => undefined);
+    } catch {
+      return Promise.resolve(undefined);
+    }
+  }
+
   async function request(path, { method = "GET", params = null } = {}) {
     const base = FirewallXConfig.getBaseUrl();
     let url = `${base}${path}`;
@@ -51,6 +73,7 @@ const FirewallXApi = (() => {
   }
 
   return {
+    wakeup,
     health: () => request("/healthz"),
     getState: () => request("/state"),
     reset: () => request("/reset", { method: "POST" }),

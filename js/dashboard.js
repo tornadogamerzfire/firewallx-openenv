@@ -16,6 +16,11 @@
     busy: false,
   };
 
+  // The first page load should warm Render and then hydrate the dashboard
+  // once the backend becomes reachable after a possible cold start.
+  let initialHydrationComplete = false;
+  let healthCheckInFlight = false;
+
   // ---------- DOM refs ----------
   const el = {
     statusDot: document.getElementById("status-dot"),
@@ -94,13 +99,27 @@
 
   // ---------- connectivity ----------
   async function pollHealth() {
+    if (healthCheckInFlight) return;
+    healthCheckInFlight = true;
+
     try {
       await FirewallXApi.health();
       el.statusDot.className = "status-dot is-live";
       el.statusText.textContent = "connected";
+
+      // If the backend was asleep during the initial wake-up request, retry
+      // hydration the first time the health check succeeds. /state is read-only
+      // and does not consume a prediction step.
+      if (!initialHydrationComplete) {
+        await hydrateFromServer();
+      }
     } catch {
+      // Keep the dashboard usable while Render is waking from an idle state.
+      // The next health poll will retry automatically.
       el.statusDot.className = "status-dot is-down";
       el.statusText.textContent = "offline";
+    } finally {
+      healthCheckInFlight = false;
     }
   }
 
@@ -332,11 +351,11 @@
     el.btnSaveApi.addEventListener("click", async () => {
       const saved = FirewallXConfig.setBaseUrl(el.apiBaseInput.value || FirewallXConfig.DEFAULT_BASE_URL);
       el.apiBaseInput.value = saved;
+      initialHydrationComplete = false;
       el.settingsStatus.textContent = "saved — checking connection…";
       await pollHealth();
       el.settingsStatus.textContent = "saved";
       setTimeout(() => { el.settingsStatus.textContent = ""; }, 2000);
-      await hydrateFromServer();
     });
   }
 
@@ -356,8 +375,9 @@
       renderStepDots();
       el.btnStep.disabled = state.done;
       el.btnRunEpisode.disabled = state.done;
+      initialHydrationComplete = true;
     } catch {
-      // backend unreachable — connectivity dot already reflects this
+      // backend unreachable — the health poll will retry hydration later
     }
   }
 
@@ -376,7 +396,12 @@
   renderStepDots();
   redrawTrace();
 
-  pollHealth();
-  hydrateFromServer();
+  // Wake Render immediately when a visitor opens the Vercel frontend. This
+  // request is fire-and-forget, so the browser does not block on Render's
+  // cold-start response. Health polling then detects when the backend is live
+  // and hydrates the initial state automatically.
+  el.statusText.textContent = "waking backend…";
+  FirewallXApi.wakeup();
+  setTimeout(pollHealth, 1000);
   setInterval(pollHealth, 8000);
 })();
