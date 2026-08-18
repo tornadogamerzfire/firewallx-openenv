@@ -1,14 +1,106 @@
+<!-- FirewallX README -->
+<div align="center">
+
+# 🛡️ FirewallX
+
+### Adaptive Cybersecurity Decision Environment for AI Agent Training & Evaluation
+
+<p>
+  <a href="https://firewallx-rho.vercel.app/"><strong>🚀 Launch Live Demo</strong></a>
+  &nbsp;•&nbsp;
+  <a href="https://github.com/tornadogamerzfire/firewallx-openenv">📦 GitHub Repository</a>
+</p>
+
+<p>
+  <img src="https://img.shields.io/badge/Frontend-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Frontend deployed on Vercel">
+  <img src="https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI backend">
+  <img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11">
+  <img src="https://img.shields.io/badge/Three.js-3D%20Visualization-black?style=for-the-badge&logo=threedotjs&logoColor=white" alt="Three.js">
+  <img src="https://img.shields.io/badge/OpenEnv-Style-7C3AED?style=for-the-badge" alt="OpenEnv-style environment">
+</p>
+
+<p>
+  <strong>Simulate traffic → make a security decision → receive a reward → visualize the result.</strong>
+</p>
+
+</div>
+
+---
+
+## 🌐 Try FirewallX Online
+
+> **FirewallX is now available as a live web application.**
+
+### 👉 [Launch the FirewallX Live Console](https://firewallx-rho.vercel.app/)
+
+Explore the interactive dashboard, 3D Interception Scope, decision engine, analytics, and API-connected environment directly in your browser.
+
+**Live Demo:** https://firewallx-rho.vercel.app/
+
+**Source Code:** https://github.com/tornadogamerzfire/firewallx-openenv
+
+---
+
+## 🧭 Project at a Glance
+
+| Layer | Technology / Role |
+|---|---|
+| 🖥️ Frontend | HTML5, CSS3, Vanilla JavaScript |
+| 🎮 Visualization | Three.js + Canvas 2D |
+| ⚡ API | FastAPI + HTTP/JSON |
+| 🧠 Environment | OpenEnv-style + Gym-style architecture |
+| 🐍 Runtime | Python 3.11 |
+| 🧪 Evaluation | Reward-based scoring + batch benchmarks |
+| 🐳 Deployment | Docker-compatible backend + static frontend |
+| ☁️ Live Frontend | Vercel |
+
+---
+
+## 🗺️ Documentation Map
+
+- [What Makes FirewallX Different?](#-what-makes-firewallx-different)
+- [Why This Matters](#-why-this-matters)
+- [Environment Overview](#-environment-overview)
+- [Architecture](#️-architecture)
+- [Project Structure](#-project-structure)
+- [Quick Start](#-quick-start)
+- [How It Works](#-how-it-works)
+- [Decision Engine](#️-decision-engine)
+- [Difficulty Levels](#-difficulty-levels)
+- [Safety Behavior](#️-safety-behavior)
+- [Reward System](#-reward-system)
+- [API](#-api)
+- [Interception Scope](#-the-interception-scope)
+- [WebGL Graceful Degradation](#-webgl-graceful-degradation)
+- [Frontend Dashboard](#-frontend-dashboard)
+- [Testing](#-testing)
+- [Audit Notes & Important Fixes](#️-audit-notes--important-fixes)
+- [Batch Analysis Integrity](#-batch-analysis-integrity)
+- [Known Limitation](#️-known-limitation)
+- [Docker](#-docker)
+- [Deployment](#️-deployment)
+- [Example Evaluation](#-example-evaluation)
+- [Key Features](#-key-features)
+- [Tech Stack](#-tech-stack)
+- [OpenEnv](#-openenv)
+- [Current Project Status](#-current-project-status)
+- [Final Summary](#-final-summary)
+- [Contributing](#-contributing)
+- [License](#️-license)
+
+---
+
 # 🛡️ FirewallX
 
 ### Adaptive Firewall Decision Environment for AI Agent Training
 
-FirewallX is an adaptive cybersecurity decision-making environment built around an [OpenEnv](https://github.com/meta-pytorch/OpenEnv)-style environment for AI agent training and evaluation.
+> FirewallX is an adaptive cybersecurity decision-making environment built around an [OpenEnv](https://github.com/meta-pytorch/OpenEnv)-style environment for AI agent training and evaluation.
 
 It simulates network traffic and requires an intelligent agent to decide whether each incoming packet should be:
 
-* ✅ **Allow** — trusted or normal traffic
-* 🟡 **Sandbox** — suspicious or uncertain traffic
-* ❌ **Block** — malicious traffic
+- ✅ **Allow** — trusted or normal traffic
+- 🟡 **Sandbox** — suspicious or uncertain traffic
+- ❌ **Block** — malicious traffic
 
 The project combines a **Python/FastAPI decision environment**, a **local Gym-style environment**, and a **live 3D browser console** that visualizes decisions as they happen.
 
